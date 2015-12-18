@@ -121,7 +121,7 @@ function gLine()
 function glLine()
 {
 	v1=(VEC $1 $2 $3 $FACTOR)
-        mMul PROJ_MAT MODEL_MAT pm_MAT
+        pm_MAT=(MAT $(mMulFast ${PROJ_MAT[@]} ${MODEL_MAT[@]}))
 	v1=(VEC $(mvMulFast ${pm_MAT[@]} ${v1[@]}) )
 	x1=
 	y1=
