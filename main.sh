@@ -11,7 +11,7 @@ function main()
 		glClear
 		glTranslate `to 0` `to 0` `to 2`
 
-		time SCR_BUFF=$(echo $SCR_BUFF | sed $(cat \
+		SCR_BUFF=$(echo $SCR_BUFF | sed $(cat \
                 <(glLine `to -1` `to -1` `to 1` `to  1` `to -1` `to 1`)\
 		<(glLine `to  1` `to -1` `to 1` `to  1` `to  1` `to 1`)\
 		<(glLine `to  1` `to  1` `to 1` `to -1` `to  1` `to 1`)\
@@ -31,7 +31,6 @@ function main()
 		glTranslate `to 0` `to 0` `to -4`
 		glRotate `expr 43643578047 \* $FACTOR / 100000000000` `expr 87287156094 \* $FACTOR / 100000000000` `expr 21821789023 \* $FACTOR / 100000000000` 1
 		glTranslate `to 0` `to 0` `to 2`
-                date
 	done
 }
 
