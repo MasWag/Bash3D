@@ -7,11 +7,11 @@ function mAssert() {
 	name=$(eval echo "$v")
 	v=$(eval echo "\$\{#$1[@]\}")
 	len=$(eval echo "$v")
-	if [ "${name}" != "MAT" ]; then
+	if [[ "${name}" != "MAT" ]]; then
 		echo \( ${all} \)is not Matrix: $name
 		exit -1
 	fi
-	if [ $len -ne 17 ]; then
+	if [[ $len -ne 17 ]]; then
 		echo \( ${all} \) not Matrix: length: $len
 		exit -1
 	fi
@@ -141,6 +141,18 @@ $(( ( ${in1[9]} * ${in2[1]} + ${in1[10]} * ${in2[2]} + ${in1[11]} * ${in2[3]} + 
 $(( ( ${in1[13]} * ${in2[1]} + ${in1[14]} * ${in2[2]} + ${in1[15]} * ${in2[3]} + ${in1[16]} * ${in2[4]} ) / $FACTOR ))\)
 EOF
 }
+
+function mvMulFast()
+{
+    shift
+    cat <<- EOF 
+$(( ( ${1} * ${18} + ${2} * ${19} + ${3} * ${20} + ${4} * ${21} ) / $FACTOR )) \
+$(( ( ${5} * ${18} + ${6} * ${19} + ${7} * ${20} + ${8} * ${21} ) / $FACTOR )) \
+$(( ( ${9} * ${18} + ${10} * ${19} + ${11} * ${20} + ${12} * ${21} ) / $FACTOR )) \
+$(( ( ${13} * ${18} + ${14} * ${19} + ${15} * ${20} + ${16} * ${21} ) / $FACTOR ))
+EOF
+}
+
 
 function mMul() {
 	in1=($(eval echo $(eval echo "$\{$1[@]\}")))

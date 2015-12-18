@@ -100,35 +100,34 @@ function gLine()
 	x=$1
 	y=$2
 	err=$(($dx - $dy))
-	while true; do
-		pos=$(($y * $COL + $x + 1))
-		SCR_BUFF="${SCR_BUFF:0:${pos}}*${SCR_BUFF:${pos}+1}"
-		if [ $x -eq $3 -a $y -eq $4 ]; then
-			return 0
-		fi
-		e2=$((2 * $err))
-		if [ $e2 -gt -$dy ]; then
-			err=$(($err - $dy))
-			x=$(($x + $sx))
-		fi
-		if [ $e2 -lt $dx ]; then
-			err=$(($err + $dx))
-			y=$(($y + $sy))
-		fi
+	while [[ $x -ne $3 || $y -ne $4 ]]; do
+            pos=$(($y * $COL + $x + 1))
+	    SCR_BUFF="${SCR_BUFF:0:${pos}}*${SCR_BUFF:${pos}+1}"
+            e2=$((2 * $err))
+            if [[ $e2 -gt -$dy ]]; then
+                ((err -= $dy))
+                ((x += $sx))
+            fi
+            if [[ $e2 -lt $dx ]]; then
+                ((err += $dx))
+                ((y += $sy))
+	    fi
 	done
 }
+
+
+
 
 function glLine()
 {
 	v1=(VEC $1 $2 $3 $FACTOR)
-	mvMul MODEL_MAT v1 v1
-	mvMul PROJ_MAT v1 v1
+        mMul PROJ_MAT MODEL_MAT pm_MAT
+	v1=(VEC $(mvMulFast ${pm_MAT[@]} ${v1[@]}) )
 	x1=
 	y1=
 	gToScreen v1 x1 y1
 	v2=(VEC $4 $5 $6 $FACTOR)
-	mvMul MODEL_MAT v2 v2
-	mvMul PROJ_MAT v2 v2
+	v2=(VEC $(mvMulFast ${pm_MAT[@]} ${v2[@]}) )
 	x2=
 	y2=
 	gToScreen v2 x2 y2
