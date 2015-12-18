@@ -1,15 +1,15 @@
-#! /bin/bash
+#!/bin/bash
 
-FACTOR=100000000000
+FACTOR=10000
 
 function to
 {
-	echo `expr $1 \* $FACTOR`
+	echo $(($1 * $FACTOR))
 }
 
-. sincos.sh
-. vec.sh
-. mat.sh
+source sincos.sh
+source vec.sh
+source mat.sh
 
 WIDTH=
 HEIGHT=
@@ -20,17 +20,17 @@ HALF_HEIGHT=
 SCR_BUFF=
 function glInit()
 {
-	COL=`tput cols`
-	LINE=`tput lines`
-	WIDTH=$(expr $FACTOR \* $COL)
-	HEIGHT=$(expr $FACTOR \* $LINE)
-	HALF_WIDTH=`expr $WIDTH \/ 2`
-	HALF_HEIGHT=`expr $HEIGHT \/ 2`
+	COL=$(tput cols)
+	LINE=$(tput lines)
+	WIDTH=$(($FACTOR * $COL))
+	HEIGHT=$(($FACTOR * $LINE))
+	HALF_WIDTH=$(($WIDTH / 2))
+	HALF_HEIGHT=$(($HEIGHT / 2))
 }
 glInit
 function glClear()
 {
-	size=$(expr $COL \* $LINE)
+	size=$(($COL * $LINE))
 	SCR_BUFF=$(head -c $size < /dev/zero | tr '\0' '_')
 }
 
@@ -84,36 +84,36 @@ function gToScreen()
 function gLine()
 {
 	if(($1 < $3));then
-		dx=`expr $3 - $1`
+		dx=$(($3 - $1))
 		sx=1
 	else
-		dx=`expr $1 - $3`
+		dx=$(($1 - $3))
 		sx=-1
 	fi
 	if(($2 < $4));then
-		dy=`expr $4 - $2`
+		dy=$(($4 - $2))
 		sy=1
 	else
-		dy=`expr $2 - $4`
+		dy=$(($2 - $4))
 		sy=-1
 	fi
 	x=$1
 	y=$2
-	err=`expr $dx - $dy`
+	err=$(($dx - $dy))
 	while true; do
-		pos=$(expr $y \* $COL \+ $x \+ 1)
+		pos=$(($y * $COL + $x + 1))
 		SCR_BUFF="${SCR_BUFF:0:${pos}}*${SCR_BUFF:${pos}+1}"
 		if [ $x -eq $3 -a $y -eq $4 ]; then
 			return 0
 		fi
-		e2=`expr 2 \* $err`
+		e2=$((2 * $err))
 		if [ $e2 -gt -$dy ]; then
-			err=`expr $err - $dy`
-			x=`expr $x \+ $sx`
+			err=$(($err - $dy))
+			x=$(($x + $sx))
 		fi
 		if [ $e2 -lt $dx ]; then
-			err=`expr $err + $dx`
-			y=`expr $y \+ $sy`
+			err=$(($err + $dx))
+			y=$(($y + $sy))
 		fi
 	done
 }

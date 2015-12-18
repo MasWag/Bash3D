@@ -1,6 +1,6 @@
-#! /bin/bash
+#!/bin/bash
 
-. 3d.sh
+source 3d.sh
 
 function main()
 {
@@ -30,9 +30,9 @@ function main()
 		glTranslate `to 0` `to 0` `to -4`
 		glRotate `expr 43643578047 \* $FACTOR / 100000000000` `expr 87287156094 \* $FACTOR / 100000000000` `expr 21821789023 \* $FACTOR / 100000000000` 1
 		glTranslate `to 0` `to 0` `to 2`
+                date
 	done
 }
 
 main
 tput cup `tput lines` 0
-
