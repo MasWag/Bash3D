@@ -11,20 +11,21 @@ function main()
 		glClear
 		glTranslate `to 0` `to 0` `to 2`
 
-		glLine `to -1` `to -1` `to 1` `to  1` `to -1` `to 1`
-		glLine `to  1` `to -1` `to 1` `to  1` `to  1` `to 1`
-		glLine `to  1` `to  1` `to 1` `to -1` `to  1` `to 1`
-		glLine `to -1` `to  1` `to 1` `to -1` `to -1` `to 1`
-
-		glLine `to -1` `to -1` `to 3` `to  1` `to -1` `to 3`
-		glLine `to  1` `to -1` `to 3` `to  1` `to  1` `to 3`
-		glLine `to  1` `to  1` `to 3` `to -1` `to  1` `to 3`
-		glLine `to -1` `to  1` `to 3` `to -1` `to -1` `to 3`
-
-		glLine `to -1` `to -1` `to 1` `to -1` `to -1` `to 3`
-		glLine `to  1` `to -1` `to 1` `to  1` `to -1` `to 3`
-		glLine `to  1` `to  1` `to 1` `to  1` `to  1` `to 3`
-		glLine `to -1` `to  1` `to 1` `to -1` `to  1` `to 3`
+		time SCR_BUFF=$(echo $SCR_BUFF | sed $(cat \
+                <(glLine `to -1` `to -1` `to 1` `to  1` `to -1` `to 1`)\
+		<(glLine `to  1` `to -1` `to 1` `to  1` `to  1` `to 1`)\
+		<(glLine `to  1` `to  1` `to 1` `to -1` `to  1` `to 1`)\
+		<(glLine `to -1` `to  1` `to 1` `to -1` `to -1` `to 1`)\
+\
+		<(glLine `to -1` `to -1` `to 3` `to  1` `to -1` `to 3`)\
+		<(glLine `to  1` `to -1` `to 3` `to  1` `to  1` `to 3`)\
+		<(glLine `to  1` `to  1` `to 3` `to -1` `to  1` `to 3`)\
+		<(glLine `to -1` `to  1` `to 3` `to -1` `to -1` `to 3`)\
+\
+		<(glLine `to -1` `to -1` `to 1` `to -1` `to -1` `to 3`)\
+		<(glLine `to  1` `to -1` `to 1` `to  1` `to -1` `to 3`)\
+		<(glLine `to  1` `to  1` `to 1` `to  1` `to  1` `to 3`)\
+		<(glLine `to -1` `to  1` `to 1` `to -1` `to  1` `to 3`)))
 
 		glSwap
 		glTranslate `to 0` `to 0` `to -4`

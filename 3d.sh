@@ -100,9 +100,8 @@ function gLine()
 	x=$1
 	y=$2
 	err=$(($dx - $dy))
-	while [[ $x -ne $3 || $y -ne $4 ]]; do
+        while [[ $x -ne $3 || $y -ne $4 ]]; do
             pos=$(($y * $COL + $x + 1))
-	    SCR_BUFF="${SCR_BUFF:0:${pos}}*${SCR_BUFF:${pos}+1}"
             e2=$((2 * $err))
             if [[ $e2 -gt -$dy ]]; then
                 ((err -= $dy))
@@ -112,6 +111,7 @@ function gLine()
                 ((err += $dx))
                 ((y += $sy))
 	    fi
+            echo -n s/./*/${pos}';'
 	done
 }
 
