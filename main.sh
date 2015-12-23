@@ -10,8 +10,7 @@ function main()
 	for ((i=0; i<720; ++i)); do
 		glClear
 		glTranslate `to 0` `to 0` `to 2`
-
-		SCR_BUFF=$(echo $SCR_BUFF | sed $(cat \
+		SCR_BUFF=$(echo $SCR_BUFF | sed 's/./|&/g;s/$/|/' | cut --complement --output-delimiter='*' -c $(cat \
                 <(glLine `to -1` `to -1` `to 1` `to  1` `to -1` `to 1`)\
 		<(glLine `to  1` `to -1` `to 1` `to  1` `to  1` `to 1`)\
 		<(glLine `to  1` `to  1` `to 1` `to -1` `to  1` `to 1`)\
@@ -25,7 +24,7 @@ function main()
 		<(glLine `to -1` `to -1` `to 1` `to -1` `to -1` `to 3`)\
 		<(glLine `to  1` `to -1` `to 1` `to  1` `to -1` `to 3`)\
 		<(glLine `to  1` `to  1` `to 1` `to  1` `to  1` `to 3`)\
-		<(glLine `to -1` `to  1` `to 1` `to -1` `to  1` `to 3`)))
+		<(glLine `to -1` `to  1` `to 1` `to -1` `to  1` `to 3`) | sed 's/,$/\n/') | tr -d '|')
 
 		glSwap
 		glTranslate `to 0` `to 0` `to -4`
