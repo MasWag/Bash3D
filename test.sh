@@ -69,6 +69,8 @@ function main() {
 	v1=(VEC 10 20 30 40)
 	mvMul m1 v1 v3
 	assertL mvMul v3 "(VEC 100 20 30 40)"
+	time v3=(VEC $(mvMulFast ${m1[@]} ${v1[@]}) )
+	assertL mvMulFast v3 "(VEC 100 20 30 40)"
 	FACTOR=1
 
 	mScale 1 2 3 v3

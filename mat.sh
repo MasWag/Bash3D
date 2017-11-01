@@ -49,6 +49,11 @@ function mScale()
 	eval "$4=(${v1[@]})"
 }
 
+function mScaleFast()
+{
+    echo $1 0 0 0 0 $2 0 0 0 0 $3 0 0 0 0 $FACTOR
+}
+
 function mTrans()
 {
 	v1=(MAT\
@@ -60,22 +65,31 @@ function mTrans()
 	eval "$4=(${v1[@]})"
 }
 
+function mTransFast() {
+    echo $FACTOR 0 0 $1 0 $FACTOR 0 $2 0 0 $FACTOR $3 0 0 0 $FACTOR
+}
+
 function mRotate()
 {
 	s=${SIN[$4]}
 	c=${COS[$4]}
+        SCFACTORMc=$(($SINCOS_FACTOR - $c))
+        cFACTOR2=$(($c * $FACTOR * $FACTOR))
+        s1FACTOR=$(($s * $1 * $FACTOR))
+        s2FACTOR=$(($s * $2 * $FACTOR))
+        s3FACTOR=$(($s * $3 * $FACTOR))
 eval <<- EOF $5=\(MAT \
-$(( ( $1 * $1 * ( $SINCOS_FACTOR - $c ) + ( $c * $FACTOR * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
-$(( ( $1 * $2 * ( $SINCOS_FACTOR - $c ) - ( $s * $3      * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
-$(( ( $1 * $3 * ( $SINCOS_FACTOR - $c ) + ( $s * $2      * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $1 * $1 * $SCFACTORMc + ( $cFACTOR2 ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $1 * $2 * $SCFACTORMc - ( $s3FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $1 * $3 * $SCFACTORMc + ( $s2FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
 0 \
-$(( ( $2 * $1 * ( $SINCOS_FACTOR - $c ) + ( $s * $3      * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
-$(( ( $2 * $2 * ( $SINCOS_FACTOR - $c ) + ( $c * $FACTOR * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
-$(( ( $2 * $3 * ( $SINCOS_FACTOR - $c ) - ( $s * $1      * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $2 * $1 * $SCFACTORMc + ( $s3FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $2 * $2 * $SCFACTORMc + ( $cFACTOR2 ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $2 * $3 * $SCFACTORMc - ( $s1FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
 0 \
-$(( ( $1 * $3 * ( $SINCOS_FACTOR - $c ) - ( $s * $2      * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
-$(( ( $2 * $3 * ( $SINCOS_FACTOR - $c ) + ( $s * $1      * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
-$(( ( $3 * $3 * ( $SINCOS_FACTOR - $c ) + ( $c * $FACTOR * $FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $1 * $3 * $SCFACTORMc - ( $s2FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $2 * $3 * $SCFACTORMc + ( $s1FACTOR ) ) / $FACTOR / $SINCOS_FACTOR )) \
+$(( ( $3 * $3 * $SCFACTORMc + ( $cFACTOR2 ) ) / $FACTOR / $SINCOS_FACTOR )) \
 0 \
 0 0 0 $FACTOR \)
 EOF
@@ -140,6 +154,7 @@ $(( ( ${in1[5]} * ${in2[1]} + ${in1[6]} * ${in2[2]} + ${in1[7]} * ${in2[3]} + ${
 $(( ( ${in1[9]} * ${in2[1]} + ${in1[10]} * ${in2[2]} + ${in1[11]} * ${in2[3]} + ${in1[12]} * ${in2[4]} ) / $FACTOR )) \
 $(( ( ${in1[13]} * ${in2[1]} + ${in1[14]} * ${in2[2]} + ${in1[15]} * ${in2[3]} + ${in1[16]} * ${in2[4]} ) / $FACTOR ))\)
 EOF
+
 }
 
 function mvMulFast()
@@ -152,7 +167,6 @@ $(( ( ${9} * ${18} + ${10} * ${19} + ${11} * ${20} + ${12} * ${21} ) / $FACTOR )
 $(( ( ${13} * ${18} + ${14} * ${19} + ${15} * ${20} + ${16} * ${21} ) / $FACTOR ))
 EOF
 }
-
 
 function mMul() {
 	in1=($(eval echo $(eval echo "$\{$1[@]\}")))

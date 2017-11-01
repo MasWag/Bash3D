@@ -18,6 +18,7 @@ LINE=
 HALF_WIDTH=
 HALF_HEIGHT=
 SCR_BUFF=
+BUFF_SIZE=
 function glInit()
 {
 	COL=$(tput cols)
@@ -26,19 +27,26 @@ function glInit()
 	HEIGHT=$(($FACTOR * $LINE))
 	HALF_WIDTH=$(($WIDTH / 2))
 	HALF_HEIGHT=$(($HEIGHT / 2))
+	HALF_COL=$(($COL / 2))
+	HALF_LINE=$(($LINE / 2))
+	BUFF_SIZE=$(($COL * $LINE))
 }
 glInit
 function glClear()
 {
-	size=$(($COL * $LINE))
-	SCR_BUFF=$(head -c $size < /dev/zero | tr '\0' '_')
+	SCR_BUFF=$(head -c $BUFF_SIZE < /dev/zero | tr '\0' '_')
+}
+
+function clearBuff()
+{
+	head -c $BUFF_SIZE < /dev/zero | tr '\0' '_'
 }
 
 function glSwap()
 {
 	tput clear
 	tput cup 0 0
-	echo -n $SCR_BUFF | sed "s/_/ /g"
+	echo -n $SCR_BUFF | tr '_' ' '
 }
 
 MODEL_MAT=
@@ -52,21 +60,17 @@ function glLoadIdentity() {
 
 function glTranslate()
 {
-	v=
-	mTrans $1 $2 $3 v
-	mMul v MODEL_MAT MODEL_MAT
+	MODEL_MAT=(MAT $(mMulFast MAT $(mTransFast $1 $2 $3) ${MODEL_MAT[@]}))
 }
 function glScale()
 {
-	v=
-	mScale $1 $2 $3 v
-	mMul v MODEL_MAT MODEL_MAT
+	MODEL_MAT=(MAT $(mMulFast MAT $(mScaleFast $1 $2 $3) ${MODEL_MAT[@]}))
 }
 function glRotate()
 {
 	v=
 	mRotate $1 $2 $3 $4 v
-	mMul v MODEL_MAT MODEL_MAT
+	MODEL_MAT=(MAT $(mMulFast ${v[@]} ${MODEL_MAT[@]}))
 }
 
 function glFrustum()
@@ -77,8 +81,13 @@ function glFrustum()
 function gToScreen()
 {
 	in=($(eval echo $(eval echo "\$\{$1[@]\}")))
-	eval $2=\$\(expr \\\( ${in[1]} \\\* $HALF_WIDTH  \\\/ ${in[4]} \\\+ $HALF_WIDTH \\\) \\\/ $FACTOR \)
-	eval $3=\$\(expr \\\( ${in[2]} \\\* $HALF_HEIGHT \\\/ ${in[4]} \\\+ $HALF_HEIGHT \\\) \\\/ $FACTOR \)
+	eval $2="$((( ${in[1]} * $HALF_WIDTH  / ${in[4]} + $HALF_WIDTH ) / $FACTOR ))"
+	eval $3="$((( ${in[2]} * $HALF_HEIGHT / ${in[4]} + $HALF_HEIGHT ) / $FACTOR ))"
+}
+
+function gToScreenArg()
+{
+    echo $((( $1 * $HALF_WIDTH  / $4 + $HALF_WIDTH ) / $FACTOR )) $((( $2 * $HALF_HEIGHT / $4 + $HALF_HEIGHT ) / $FACTOR ))
 }
 
 function gLine()
@@ -101,7 +110,7 @@ function gLine()
 	y=$2
 	err=$(($dx - $dy))
         while [[ $x -ne $3 || $y -ne $4 ]]; do
-            pos=$((2*($y * $COL + $x + 1)))
+            echo -n $((2*($y * $COL + $x + 1)))','
             e2=$((2 * $err))
             if [[ $e2 -gt -$dy ]]; then
                 ((err -= $dy))
@@ -111,7 +120,6 @@ function gLine()
                 ((err += $dx))
                 ((y += $sy))
 	    fi
-            echo -n ${pos}','
 	done
 }
 
@@ -120,17 +128,7 @@ function gLine()
 
 function glLine()
 {
-	v1=(VEC $1 $2 $3 $FACTOR)
-        pm_MAT=(MAT $(mMulFast ${PROJ_MAT[@]} ${MODEL_MAT[@]}))
-	v1=(VEC $(mvMulFast ${pm_MAT[@]} ${v1[@]}) )
-	x1=
-	y1=
-	gToScreen v1 x1 y1
-	v2=(VEC $4 $5 $6 $FACTOR)
-	v2=(VEC $(mvMulFast ${pm_MAT[@]} ${v2[@]}) )
-	x2=
-	y2=
-	gToScreen v2 x2 y2
-	gLine $x1 $y1 $x2 $y2
+        pm_MAT=$(mMulFast ${PROJ_MAT[@]} ${MODEL_MAT[@]})
+        gLine $(gToScreenArg $(mvMulFast MAT $pm_MAT VEC $1 $2 $3 $FACTOR)) $(gToScreenArg $(mvMulFast MAT $pm_MAT VEC $4 $5 $6 $FACTOR))
 }
 
